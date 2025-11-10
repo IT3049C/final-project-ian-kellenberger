@@ -11,6 +11,8 @@
 
 I should get **( )** out of 20 on this assignment.
 
+My team includes: Ian Kellenberger(Me)
+
 ## Self-Reflection
 
 - **How long it took me to finish this?**
