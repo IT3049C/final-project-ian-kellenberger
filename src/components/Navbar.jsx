@@ -13,8 +13,7 @@ export default function Navbar() {
         <Link to="/rps">RPS</Link>
         <Link to="/tictactoe">Tic Tac Toe</Link>
         <Link to="/hangman">Hangman</Link>
-        <Link to="/wordle">Wordle</Link>
-        <Link to="/multiplayer">Multiplayer</Link>
+  <Link to="/wordle">Wordle</Link>
       </nav>
       <NameCapture />
     </header>
