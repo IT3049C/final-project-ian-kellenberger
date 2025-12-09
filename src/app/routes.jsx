@@ -1,0 +1,3 @@
+import RpsGame from '../games/rps/RpsGame';
+// ...
+<Route path="/rps" element={<RpsGame />} />
