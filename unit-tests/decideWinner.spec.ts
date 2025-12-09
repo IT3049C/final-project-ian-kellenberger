@@ -4,7 +4,7 @@ import decideWinner from '../src/games/rps/decideWinner'
 describe('decideWinner', () => {
   it('returns — when missing choices', () => {
     expect(decideWinner('', '')).toBe('—')
-    expect(decideWinner(null, 'Rock')).toBe('—')
+    expect(decideWinner(null as any, 'Rock')).toBe('—')
   })
 
   it('returns Draw for same choices', () => {
