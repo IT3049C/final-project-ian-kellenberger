@@ -1,4 +1,5 @@
 import './App.css'
+import './styles/theme.css'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import RpsGame from './games/rps/RpsGame'
 import TicTacToeGame from './games/tictactoe/TicTacToeGame'
