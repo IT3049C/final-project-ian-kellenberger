@@ -2,13 +2,20 @@ import React, { useEffect, useState, useRef } from 'react'
 import usePlayer from '../../app/usePlayer'
 import winnerFromBoard from './winner'
 import { createRoom, getRoom, updateRoom } from '../../multiplayer/GameRoomClient'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 
 const EMPTY = ''
 
 export default function TicTacToeGame() {
-	const { playerName } = usePlayer()
+	const { playerName, setPlayerName } = usePlayer()
+	const { roomId: roomIdParam } = useParams()
+	const location = useLocation()
+	const navigate = useNavigate()
 	const [board, setBoard] = useState(Array(9).fill(EMPTY))
 	const [status, setStatus] = useState('—')
+	const [players, setPlayers] = useState({})
+	const [createName, setCreateName] = useState(playerName || '')
+	const [joinName, setJoinName] = useState(playerName || '')
 
 	// multiplayer state
 	const [roomId, setRoomId] = useState('')
@@ -43,7 +50,10 @@ export default function TicTacToeGame() {
 	}
 
 	async function handleCreateRoom() {
-		const initial = { board: Array(9).fill(EMPTY), currentPlayer: 'X' }
+		const creatorName = createName || playerName || 'Player X'
+		// set player's name in context
+		if (creatorName !== playerName) setPlayerName(creatorName)
+		const initial = { board: Array(9).fill(EMPTY), currentPlayer: 'X', players: { X: creatorName } }
 		try {
 			const data = await createRoom(initial)
 			// API returns roomId and gameState
@@ -52,6 +62,7 @@ export default function TicTacToeGame() {
 			setCurrentPlayer(data.gameState?.currentPlayer || 'X')
 			setLocalSymbol('X') // creator is X
 			startPolling(data.roomId || data.id)
+			setPlayers({ X: createName || playerName || 'Player X' })
 		} catch (err) {
 			console.error('create room failed', err)
 		}
@@ -64,13 +75,52 @@ export default function TicTacToeGame() {
 			setRoomId(id)
 			setBoard(data.gameState?.board || Array(9).fill(EMPTY))
 			setCurrentPlayer(data.gameState?.currentPlayer || 'X')
+			setPlayers(data.gameState?.players || {})
 			setLocalSymbol('O') // joiner becomes O
+			// set player's name in context and in the room state
+			const joiningName = joinName || playerName || 'Player O'
+			if (joiningName !== playerName) setPlayerName(joiningName)
+			// if room doesn't have players or no O name set, update it
+			const existingPlayers = data.gameState?.players || {}
+			try {
+				const updated = await updateRoom(id, { ...data.gameState, players: { ...existingPlayers, O: joiningName } })
+				setPlayers(updated.gameState?.players || { ...existingPlayers, O: joiningName })
+			} catch (err) {
+				console.error('failed to update players', err)
+				// fallback: set players locally
+				setPlayers({ ...existingPlayers, O: joiningName })
+			}
 			startPolling(id)
 		} catch (err) {
 			console.error('join failed', err)
 			alert('Failed to join room')
 		}
 	}
+
+	// if there is a roomId param in the route, join it on mount
+	useEffect(() => {
+		if (roomIdParam && roomIdParam !== roomId) {
+			// if this navigation indicates the user just created the room, treat them as creator (X)
+			if (location?.state?.created) {
+				// load the room state without attempting to claim O
+				(async function loadCreator() {
+					try {
+						const data = await getRoom(roomIdParam)
+						setRoomId(roomIdParam)
+						setBoard(data.gameState?.board || Array(9).fill(EMPTY))
+						setCurrentPlayer(data.gameState?.currentPlayer || 'X')
+						setPlayers(data.gameState?.players || {})
+						setLocalSymbol('X')
+						startPolling(roomIdParam)
+					} catch (err) {
+						console.error('failed to load created room', err)
+					}
+				})()
+				return
+			}
+			handleJoinRoom(roomIdParam)
+		}
+	}, [roomIdParam, location])
 
 	function startPolling(id) {
 		if (pollRef.current) clearInterval(pollRef.current)
@@ -81,6 +131,7 @@ export default function TicTacToeGame() {
 				const gs = data.gameState
 				setBoard(gs.board || (b => b))
 				setCurrentPlayer(gs.currentPlayer || 'X')
+				setPlayers(gs.players || {})
 				const res = winnerFromBoard(gs.board || board)
 				if (res !== '—') setStatus(res === 'Draw' ? 'Draw' : `${res} wins`)
 			} catch (err) {
@@ -115,9 +166,10 @@ export default function TicTacToeGame() {
 		const nextPlayer = localSymbol === 'X' ? 'O' : 'X'
 
 		try {
-			const data = await updateRoom(roomId, { board: next, currentPlayer: nextPlayer })
+			const data = await updateRoom(roomId, { board: next, currentPlayer: nextPlayer, players: players })
 			setBoard(data.gameState?.board || next)
 			setCurrentPlayer(data.gameState?.currentPlayer || nextPlayer)
+			setPlayers(data.gameState?.players || players)
 		} catch (err) {
 			console.error('update failed', err)
 		}
@@ -162,6 +214,10 @@ export default function TicTacToeGame() {
 		setRoomId('')
 		setLocalSymbol(null)
 		resetLocal()
+		// if we arrived via a room route, navigate back to hub
+		if (roomIdParam) {
+			navigate('/')
+		}
 	}
 
 	return (
@@ -172,7 +228,9 @@ export default function TicTacToeGame() {
 			<div style={{ marginBottom: '1rem' }}>
 				<strong>Multiplayer</strong>
 				<div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
+					<input aria-label="create-player-name" placeholder="Your name" value={createName} onChange={(e) => setCreateName(e.target.value)} style={{ width: 140 }} />
 					<button onClick={handleCreateRoom} disabled={!!roomId}>Create Room</button>
+					<input aria-label="join-player-name" placeholder="Your name" value={joinName} onChange={(e) => setJoinName(e.target.value)} style={{ width: 120 }} />
 					<input
 						aria-label="Room code"
 						placeholder="Enter room code"
@@ -192,6 +250,7 @@ export default function TicTacToeGame() {
 					{roomId && (
 						<>
 							<span style={{ marginLeft: '8px' }}>Room: {roomId}</span>
+							<div style={{ marginLeft: '8px' }}>Players: X: {players.X || '—'} / O: {players.O || '—'}</div>
 							<button onClick={leaveRoom}>Leave</button>
 						</>
 					)}
@@ -213,7 +272,7 @@ export default function TicTacToeGame() {
 
 			<div style={{ marginTop: '1rem' }}>
 				<p role="status" aria-label="Game status">Result: {status}</p>
-				{roomId && <p>Turn: {currentPlayer} — You are: {localSymbol || '—'}</p>}
+				{roomId && <p>Turn: {currentPlayer} — You are: {localSymbol || '—'} ({playerName || '—'})</p>}
 			</div>
 
 			<div style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>

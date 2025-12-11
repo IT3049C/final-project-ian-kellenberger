@@ -6,6 +6,8 @@ const games = [
   { path: '/tictactoe', name: 'Tic Tac Toe', icon: '⭕', desc: 'Strategic 3x3 grid game' },
   { path: '/hangman', name: 'Hangman', icon: '🎮', desc: 'Guess the word before you run out of tries' },
   { path: '/wordle', name: 'Wordle', icon: '📝', desc: 'Guess the 5-letter word in 6 attempts' },
+  { path: '/room/create', name: 'Create Room', icon: '👥', desc: 'Create a multiplayer room and invite a friend' },
+  { path: '/room/join', name: 'Join Room', icon: '🔑', desc: 'Join an existing room with a code' },
   // multiplayer removed from hub; multiplayer functionality integrated into Tic Tac Toe
 ]
 
