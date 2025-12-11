@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('tictactoe loads initial state', async ({ page }) => {
+  page.on('console', (m) => console.log('[PAGE_CONSOLE]', m.type(), m.text()));
   await page.goto('/#/tictactoe')
   await expect(page.getByRole('heading', { name: 'Tic Tac Toe' })).toBeVisible()
   await expect(page.getByRole('group', { name: /board/i })).toBeVisible()
@@ -8,6 +9,7 @@ test('tictactoe loads initial state', async ({ page }) => {
 })
 
 test('player can place X in cell 0', async ({ page }) => {
+  page.on('console', (m) => console.log('[PAGE_CONSOLE]', m.type(), m.text()));
   await page.goto('/#/tictactoe')
   const cell0 = page.getByRole('button', { name: /cell-0/i })
   await cell0.click()

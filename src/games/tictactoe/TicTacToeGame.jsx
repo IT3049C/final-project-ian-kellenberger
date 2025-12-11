@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import usePlayer from '../../app/usePlayer'
 import winnerFromBoard from './winner'
 import { createRoom, getRoom, updateRoom } from '../../multiplayer/GameRoomClient'
@@ -68,7 +68,7 @@ export default function TicTacToeGame() {
 		}
 	}
 
-	async function handleJoinRoom(id) {
+	const handleJoinRoom = useCallback(async (id) => {
 		if (!id) return
 		try {
 			const data = await getRoom(id)
@@ -95,7 +95,7 @@ export default function TicTacToeGame() {
 			console.error('join failed', err)
 			alert('Failed to join room')
 		}
-	}
+	}, [joinName, playerName, setPlayerName, startPolling]);
 
 	// if there is a roomId param in the route, join it on mount
 	useEffect(() => {
@@ -120,25 +120,25 @@ export default function TicTacToeGame() {
 			}
 			handleJoinRoom(roomIdParam)
 		}
-	}, [roomIdParam, location])
+	}, [roomIdParam, location, handleJoinRoom, startPolling, roomId])
 
-	function startPolling(id) {
+	const startPolling = useCallback((id) => {
 		if (pollRef.current) clearInterval(pollRef.current)
 		pollRef.current = setInterval(async () => {
 			try {
 				const data = await getRoom(id)
 				if (!data || !data.gameState) return
 				const gs = data.gameState
-				setBoard(gs.board || (b => b))
+				setBoard(gs.board || Array(9).fill(EMPTY))
 				setCurrentPlayer(gs.currentPlayer || 'X')
 				setPlayers(gs.players || {})
-				const res = winnerFromBoard(gs.board || board)
+				const res = winnerFromBoard(gs.board || Array(9).fill(EMPTY))
 				if (res !== '—') setStatus(res === 'Draw' ? 'Draw' : `${res} wins`)
 			} catch (err) {
 				console.error('poll error', err)
 			}
 		}, 1000)
-	}
+		}, [])
 
 	function stopPolling() {
 			if (pollRef.current) {
@@ -283,4 +283,4 @@ export default function TicTacToeGame() {
 			</div>
 		</section>
 	)
-}
+	}
