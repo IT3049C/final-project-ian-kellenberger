@@ -2,8 +2,11 @@ import React, { useState } from 'react'
 import usePlayer from '../../app/usePlayer'
 import winnerFromBoard from './winner'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { createRoom, getRoom, updateRoom } from '../../multiplayer/GameRoomClient'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 =======
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 
@@ -25,6 +28,7 @@ export default function TicTacToeGame() {
 		setStatus('—')
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	async function resetMultiplayer() {
 		if (!roomId) return
@@ -142,6 +146,9 @@ export default function TicTacToeGame() {
 =======
 	function handlePlayerMove(i) {
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
+=======
+	function handlePlayerMove(i) {
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 		if (board[i] !== EMPTY) return
 		if (status !== '—') return
 
@@ -156,6 +163,7 @@ export default function TicTacToeGame() {
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// flip currentPlayer
 		const nextPlayer = localSymbol === 'X' ? 'O' : 'X'
 
@@ -167,11 +175,16 @@ export default function TicTacToeGame() {
 		} catch (err) {
 			console.error('update failed', err)
 =======
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 		// simple CPU: pick a random empty cell
 		const emptyIndexes = next.map((v, idx) => (v === EMPTY ? idx : -1)).filter((v) => v >= 0)
 		if (emptyIndexes.length === 0) {
 			setStatus('Draw')
 			return
+<<<<<<< HEAD
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
+=======
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 		}
 		const choice = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)]
@@ -179,6 +192,7 @@ export default function TicTacToeGame() {
 		afterCpu[choice] = 'O'
 		setBoard(afterCpu)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	function handleLocalClick(i) {
 		if (roomId) {
@@ -227,6 +241,10 @@ export default function TicTacToeGame() {
 		const res2 = winnerFromBoard(afterCpu)
 		if (res2 !== '—') setStatus(res2 === 'Draw' ? 'Draw' : `${res2} wins`)
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
+=======
+		const res2 = winnerFromBoard(afterCpu)
+		if (res2 !== '—') setStatus(res2 === 'Draw' ? 'Draw' : `${res2} wins`)
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 	}
 
 	return (
@@ -234,6 +252,7 @@ export default function TicTacToeGame() {
 			<h2>Tic Tac Toe</h2>
 			<p aria-live="polite">{playerName ? `Player: ${playerName}` : 'Player: —'}</p>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 			<div style={{ marginBottom: '1rem' }}>
 				<strong>Multiplayer</strong>
@@ -269,6 +288,8 @@ export default function TicTacToeGame() {
 
 =======
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 			<div role="group" aria-label="Board" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 64px)', gap: '8px', margin: '1rem 0' }}>
 				{board.map((cell, idx) => (
 					<button
@@ -285,7 +306,10 @@ export default function TicTacToeGame() {
 			<div style={{ marginTop: '1rem' }}>
 				<p role="status" aria-label="Game status">Result: {status}</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
 				{roomId && <p>Turn: {currentPlayer} — You are: {localSymbol || '—'} ({playerName || '—'})</p>}
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 =======
 >>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 			</div>
