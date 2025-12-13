@@ -14,6 +14,10 @@ export default function Navbar() {
         <Link to="/tictactoe">Tic Tac Toe</Link>
         <Link to="/hangman">Hangman</Link>
         <Link to="/wordle">Wordle</Link>
+<<<<<<< HEAD
+=======
+        <Link to="/multiplayer">Multiplayer</Link>
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
       </nav>
       <NameCapture />
     </header>

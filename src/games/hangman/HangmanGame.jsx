@@ -1,15 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import usePlayer from '../../app/usePlayer'
-import { getRandomHangmanWord } from './words'
 
+const WORDS = ['react', 'electron', 'javascript', 'hangman', 'router']
 const MAX_WRONG = 6
 
 export default function HangmanGame() {
 	const { playerName } = usePlayer()
-	const [word, setWord] = useState(() => getRandomHangmanWord())
 	const [wrong, setWrong] = useState(0)
 	const [guessed, setGuessed] = useState(new Set())
 	const [status, setStatus] = useState('—')
+
+	const word = useMemo(() => {
+		// pick deterministic word per session; keep same word until reset
+		return WORDS[Math.floor(Math.random() * WORDS.length)]
+	}, [])
 
 	const masked = word.split('').map((c) => (guessed.has(c) ? c : '—')).join('')
 
@@ -29,7 +33,6 @@ export default function HangmanGame() {
 	}
 
 	function reset() {
-		setWord(getRandomHangmanWord())
 		setWrong(0)
 		setGuessed(new Set())
 		setStatus('—')

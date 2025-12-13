@@ -1,8 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState } from 'react'
 import usePlayer from '../../app/usePlayer'
 import winnerFromBoard from './winner'
+<<<<<<< HEAD
 import { createRoom, getRoom, updateRoom } from '../../multiplayer/GameRoomClient'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 
 const EMPTY = ''
 
@@ -17,25 +20,12 @@ export default function TicTacToeGame() {
 	const [createName, setCreateName] = useState(playerName || '')
 	const [joinName, setJoinName] = useState(playerName || '')
 
-	// multiplayer state
-	const [roomId, setRoomId] = useState('')
-	const [localSymbol, setLocalSymbol] = useState(null) // 'X' or 'O'
-	const [currentPlayer, setCurrentPlayer] = useState('X')
-		// polling state handled via ref
-	const pollRef = useRef(null)
-
-	useEffect(() => {
-		return () => {
-			if (pollRef.current) clearInterval(pollRef.current)
-		}
-	}, [])
-
-	function resetLocal() {
+	function reset() {
 		setBoard(Array(9).fill(EMPTY))
 		setStatus('—')
-		setCurrentPlayer('X')
 	}
 
+<<<<<<< HEAD
 	async function resetMultiplayer() {
 		if (!roomId) return
 		const initial = { board: Array(9).fill(EMPTY), currentPlayer: 'X' }
@@ -149,19 +139,23 @@ export default function TicTacToeGame() {
 
 	async function handleMultiplayerMove(i) {
 		if (!roomId) return
+=======
+	function handlePlayerMove(i) {
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 		if (board[i] !== EMPTY) return
 		if (status !== '—') return
-		if (!localSymbol) return
-		if (currentPlayer !== localSymbol) return // not your turn
 
 		const next = [...board]
-		next[i] = localSymbol
-		// compute winner locally
+		next[i] = 'X'
+		setBoard(next)
+
 		const res = winnerFromBoard(next)
 		if (res !== '—') {
 			setStatus(res === 'Draw' ? 'Draw' : `${res} wins`)
+			return
 		}
 
+<<<<<<< HEAD
 		// flip currentPlayer
 		const nextPlayer = localSymbol === 'X' ? 'O' : 'X'
 
@@ -172,9 +166,20 @@ export default function TicTacToeGame() {
 			setPlayers(data.gameState?.players || players)
 		} catch (err) {
 			console.error('update failed', err)
+=======
+		// simple CPU: pick a random empty cell
+		const emptyIndexes = next.map((v, idx) => (v === EMPTY ? idx : -1)).filter((v) => v >= 0)
+		if (emptyIndexes.length === 0) {
+			setStatus('Draw')
+			return
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 		}
-	}
+		const choice = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)]
+		const afterCpu = [...next]
+		afterCpu[choice] = 'O'
+		setBoard(afterCpu)
 
+<<<<<<< HEAD
 	function handleLocalClick(i) {
 		if (roomId) {
 			handleMultiplayerMove(i)
@@ -218,6 +223,10 @@ export default function TicTacToeGame() {
 		if (roomIdParam) {
 			navigate('/')
 		}
+=======
+		const res2 = winnerFromBoard(afterCpu)
+		if (res2 !== '—') setStatus(res2 === 'Draw' ? 'Draw' : `${res2} wins`)
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 	}
 
 	return (
@@ -225,6 +234,7 @@ export default function TicTacToeGame() {
 			<h2>Tic Tac Toe</h2>
 			<p aria-live="polite">{playerName ? `Player: ${playerName}` : 'Player: —'}</p>
 
+<<<<<<< HEAD
 			<div style={{ marginBottom: '1rem' }}>
 				<strong>Multiplayer</strong>
 				<div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
@@ -257,12 +267,14 @@ export default function TicTacToeGame() {
 				</div>
 			</div>
 
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 			<div role="group" aria-label="Board" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 64px)', gap: '8px', margin: '1rem 0' }}>
 				{board.map((cell, idx) => (
 					<button
 						key={idx}
 						aria-label={`cell-${idx}`}
-						onClick={() => handleLocalClick(idx)}
+						onClick={() => handlePlayerMove(idx)}
 						style={{ width: 64, height: 64, fontSize: '1.5rem' }}
 					>
 						{cell || ' '}
@@ -272,15 +284,15 @@ export default function TicTacToeGame() {
 
 			<div style={{ marginTop: '1rem' }}>
 				<p role="status" aria-label="Game status">Result: {status}</p>
+<<<<<<< HEAD
 				{roomId && <p>Turn: {currentPlayer} — You are: {localSymbol || '—'} ({playerName || '—'})</p>}
+=======
+>>>>>>> parent of 6338697 (games implemented and multiplater added to tictactoe)
 			</div>
 
-			<div style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>
-				<button aria-label="Reset game" onClick={roomId ? resetMultiplayer : resetLocal}>
-					Reset
-				</button>
-				{roomId ? <button onClick={leaveRoom}>Leave Room</button> : null}
-			</div>
+			<button aria-label="Reset game" onClick={reset} style={{ marginTop: '1rem' }}>
+				Reset
+			</button>
 		</section>
 	)
 }

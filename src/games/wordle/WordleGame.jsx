@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import usePlayer from '../../app/usePlayer'
-import { getRandomWordleWord } from './words'
 
+const WORDS = ['apple', 'grape', 'train', 'react', 'crazy']
 const LEN = 5
 const MAX_GUESSES = 6
 
@@ -30,7 +30,7 @@ function scoreGuess(guess, target) {
 
 export default function WordleGame() {
 	const { playerName } = usePlayer()
-	const [target, setTarget] = useState(() => getRandomWordleWord())
+	const target = useMemo(() => WORDS[Math.floor(Math.random() * WORDS.length)], [])
 	const [guesses, setGuesses] = useState([])
 	const [input, setInput] = useState('')
 	const [status, setStatus] = useState('—')
@@ -51,7 +51,6 @@ export default function WordleGame() {
 	}
 
 	function reset() {
-		setTarget(getRandomWordleWord())
 		setGuesses([])
 		setInput('')
 		setStatus('—')
