@@ -19,8 +19,8 @@ export default function CreateRoom() {
       const data = await createRoom(initialState)
       const id = data.roomId || data.id
       setRoomId(id)
-      // Navigate to the room page and indicate this client created the room (so it's X)
-      navigate(`/room/${id}`, { state: { created: true } })
+      setCreating(false)
+      // Don't navigate, let user see the room id
     } catch (err) {
       console.error('Create room failed', err)
       setCreating(false)
@@ -35,7 +35,10 @@ export default function CreateRoom() {
         <input aria-label="create-player-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
         <button onClick={handleCreate} disabled={creating}>{creating ? 'Creating...' : 'Create Room'}</button>
         {roomId ? (
-          <span>Room: {roomId}</span>
+          <>
+            <span>Room: {roomId}</span>
+            <button onClick={() => navigate(`/room/${roomId}`, { state: { created: true } })}>Go to Room</button>
+          </>
         ) : null}
       </div>
     </section>
